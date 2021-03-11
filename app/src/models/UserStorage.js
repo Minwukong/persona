@@ -1,14 +1,24 @@
 "use strict";
 
+
+const fs = require("fs").promises
+
 class UserStorage {
-    static #users = {
-        id: ["minjun","챕챕","민준","1"],
-        password: ["1234","1234","12345","2"],
-        name: ["민준","채빈","민준이","숫자"]
-    };
+
+    static #getUserInfo(data, id){
+        const users = JSON.parse(data);
+        const idx = users.id.indexOf(id);
+        const userskeys = Object.keys(users); // => [id,password,name]
+        const userInfo = userskeys.reduce((newUser, info) => {
+            newUser[info] = users[info][idx];
+            return newUser;
+        }, {});
+        
+        return userInfo;
+     }
 
     static getUsers(...fields){
-        const users = this.#users;
+        // const users = this.#users;
         const newUsers = fields.reduce((newUsers, field) => {
             if(users.hasOwnProperty(field)){
                 newUsers[field] = users[field];
@@ -17,21 +27,19 @@ class UserStorage {
         }, {});
         return newUsers;
     }
-
+//then()은 성공했을때 실행 catch()는 실패했을 때 실행
     static getUserInfo(id){
-        const users = this.#users;
-        const idx = users.id.indexOf(id);
-        const userskeys = Object.keys(users); // => [id,password,name]
-        const userInfo = userskeys.reduce((newUser, info) => {
-            newUser[info] = users[info][idx];
-            return newUser;
-        }, {});
-
-        return userInfo;
-    }
+        return fs.readFile("./src/databases/users.json")
+        .then((data) => {
+           return this.#getUserInfo(data, id);
+        }) 
+        .catch(console.error);
+    };
+    
+ 
 
     static save(userInfo){
-        const users = this.#users;
+        // const users = this.#users;
         users.id.push(userInfo.id);
         users.name.push(userInfo.name)
         users.password.push(userInfo.password);
