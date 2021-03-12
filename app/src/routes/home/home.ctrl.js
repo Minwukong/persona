@@ -14,7 +14,11 @@ const output = {
     },
     register: (req,res) => {
         res.render("home/register");
-    }
+    },
+    test_a: (req,res) => {
+        res.render("home/test_a");
+    },
+
 };
 
 // const home = (req,res) => {
